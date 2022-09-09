@@ -1,6 +1,4 @@
 # Openshift Prometheus Metrics Selector
-
-
 ## Description
 
 Prometheus Stack on Openshift exposes tons of metrics. All are important, but what are definitely significants?
@@ -14,8 +12,29 @@ OCP_pms is a Prometheus exporter that performs the following actions:
 OCP_pms is also useful when you install Prometheus thorough an operator and you need to do some change quickly on label or annotation of Prometheus pod. 
 Usually them are controlled by the operator.
 
-# Installation
+## Installation
 
+```bash
 oc create -f manifests/ocp_metrics_selector.yaml
+
+# Change token of your sevice account that can be authenticated to the internale Openshift Prometheus
 oc create -f manifests/secret-ocp-metrics-selector.yaml
+
+# Change url and regex for your needs
 oc create configmap ocp-metrics-selector-cm --from-file=metrics_selector.ini -n metrics-selector
+```
+
+## ConfigMap Example
+
+```bash
+apiVersion: v1
+data:
+  metrics_selector.ini: |
+    [prometheus]
+    url = https://prometheus-k8s-openshift-monitoring.apps.test.sourcesense.local
+    regex = "^.*(etcd-operator|node-exporter|apiserver-operator-|openshift-state-metrics).*$"
+kind: ConfigMap
+metadata:
+  name: ocp-metrics-selector-cm
+  namespace: metrics-selector
+```

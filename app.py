@@ -7,7 +7,7 @@ import logging
 import os
 
 from flask import Flask
-logging.info('Starting OCP Prometheus Selecta')
+logging.info('Starting OCP Prometheus Selector')
 app = Flask(__name__)
 config = configparser.ConfigParser()
 config.sections()
@@ -24,7 +24,7 @@ global_payload = ""
 
 @app.route('/')
 def hello_world():
-    return 'Welcome to Prometheus Metrics Selecta'
+    return 'Welcome to Prometheus Metrics Selector'
 
 @app.route('/metrics')
 def metrics():
