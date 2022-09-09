@@ -59,7 +59,7 @@ def metrics():
 
   for scrape_url in scrape_urls:
     app.logger.error(f"Scraping metrics from {scrape_url}")
-    payload = requests.get(f"f{scrape_url}", verify=False, headers=headers, allow_redirects=True)
+    payload = requests.get(f"{scrape_url}", verify=False, headers=headers, allow_redirects=True)
     app.logger.error(f"Appending metrics from {payload.text} to the global_payload")
     global_payload = f"{global_payload}\n1%{payload.text}"
 
