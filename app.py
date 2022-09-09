@@ -31,7 +31,6 @@ def metrics():
     logging.info(f"Called /metrics endpoint")
     scrape_urls = []
     headers = {"Authorization": f"Bearer {token}"}
-    return headers
     payload = requests.get(f"{prometheus_url}/api/v1/targets", verify=False, headers=headers, allow_redirects=True)
     targets = json.loads(payload.text)
     for target in targets['data']['activeTargets']:
