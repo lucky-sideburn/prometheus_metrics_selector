@@ -1,0 +1,36 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: ocp-metrics-selector
+spec:
+  template:
+    metadata:
+      labels:
+        app: ocp-metrics-selector
+    spec:
+      containers:
+        - name: ocp-metrics-selector
+          image: >-
+            docker.io/luckysideburn/ocp_metrics_selector:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          env:
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: secret-ocp-metrics-selector
+                  key: token
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/conf
+      volumes:
+        - name: config-volume
+          configMap:
+            name: ocp-metrics-selector-cm
+  replicas: 1
+  triggers:
+    - type: "ConfigChange"
+  strategy:
+    type: Rolling
