@@ -43,10 +43,10 @@ def metrics():
   
   for target in targets['data']['activeTargets']:
     app.logger.error(f"Computing target {target}")
-  if  target['labels']['namespace'] in namespaces:
+  if target['discoveredLabels']['namespace'] in namespaces:
     app.logger.error(f">>> Selected target {target}")
     scrape_urls.append(target['scrapeUrl'])
-  if target['labels']['job'] in jobs:
+  if target['discoveredLabels']['job'] in jobs:
     app.logger.error(f">>> Selected target {target}")
     scrape_urls.append(target['scrapeUrl']) 
   for scrape_url in scrape_urls:
