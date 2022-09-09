@@ -15,12 +15,13 @@ config.read('/app/conf/metrics_selector.ini')
 logging.info('Read configuration from selector.ini')
 prometheus_url = config['prometheus']['url']
 logging.info(f"Prometheus URL is {prometheus_url}")
-token = os.environ["TOKEN"]
+token_env = os.environ["TOKEN"]
+token = token_env.strip()
+
 regex = config['prometheus']['regex']
 logging.info(f"OCP Prometheus Metrics Selecta will use this regex {regex}")
 
 scrape_urls = []
-global_payload = ""
 
 @app.route('/')
 def hello_world():
@@ -28,6 +29,7 @@ def hello_world():
 
 @app.route('/metrics')
 def metrics():
+    global_payload = ""
     logging.info(f"Called /metrics endpoint")
     scrape_urls = []
     headers = {"Authorization": f"Bearer {token}"}
