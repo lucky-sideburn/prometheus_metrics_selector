@@ -25,8 +25,6 @@ token = token_env.strip()
 namespaces = list(config['prometheus']['namespaces'].split(",")) 
 jobs = list(config['prometheus']['jobs'].split(","))  
 
-app.logger.error(f"OCP Prometheus Metrics Selector will use this regex {regex}")
-
 scrape_urls = []
 
 @app.route('/')
@@ -45,7 +43,6 @@ def metrics():
   
   for target in targets['data']['activeTargets']:
     app.logger.error(f"Computing target {target}")
-    app.logger.error(f"Check regex on namespace for now... Namespace is: {target['labels']['namespace']}")
   if  target['labels']['namespace'] in namespaces:
     app.logger.error(f">>> Selected target {target}")
     scrape_urls.append(target['scrapeUrl'])
