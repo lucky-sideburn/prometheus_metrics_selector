@@ -29,6 +29,8 @@ scrape_urls = []
 
 @app.route('/')
 def hello_world():
+    app.logger.error(' '.join(map(str, namespaces))) 
+    app.logger.error(' '.join(map(str, jobs))) 
     return 'Welcome to Prometheus Metrics Selector'
 
 @app.route('/metrics')
@@ -42,13 +44,19 @@ def metrics():
   targets = payload.json()
   
   for target in targets['data']['activeTargets']:
-    app.logger.error(f"Computing target {target['discoveredLabels']}")
-  if target['discoveredLabels']['__meta_kubernetes_namespace'] in namespaces:
-    app.logger.error(f">>> Selected target {target}")
-    scrape_urls.append(target['scrapeUrl'])
-  if target['discoveredLabels']['job'] in jobs:
-    app.logger.error(f">>> Selected target {target}")
-    scrape_urls.append(target['scrapeUrl']) 
+    
+    app.logger.error(f"Checking namespaces { target['discoveredLabels']['__meta_kubernetes_namespace']}")
+    
+    if target['discoveredLabels']['__meta_kubernetes_namespace'] in namespaces:
+      app.logger.error(f">>> Selected target {target}")
+      scrape_urls.append(target['scrapeUrl'])
+    
+    app.logger.error(f"Checking job { target['discoveredLabels']['job']}")
+    
+    if target['discoveredLabels']['job'] in jobs:
+      app.logger.error(f">>> Selected target {target}")
+      scrape_urls.append(target['scrapeUrl']) 
+
   for scrape_url in scrape_urls:
     app.logger.error(f"Scraping metrics from {scrape_url}")
     payload = requests.get(f"f{scrape_url}", verify=False, headers=headers, allow_redirects=True)
