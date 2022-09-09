@@ -42,8 +42,8 @@ def metrics():
   targets = payload.json()
   
   for target in targets['data']['activeTargets']:
-    app.logger.error(f"Computing target {target}")
-  if target['discoveredLabels']['namespace'] in namespaces:
+    app.logger.error(f"Computing target {target['discoveredLabels']}")
+  if target['discoveredLabels']['__meta_kubernetes_namespace'] in namespaces:
     app.logger.error(f">>> Selected target {target}")
     scrape_urls.append(target['scrapeUrl'])
   if target['discoveredLabels']['job'] in jobs:
