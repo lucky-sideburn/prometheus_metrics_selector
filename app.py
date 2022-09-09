@@ -11,7 +11,7 @@ logging.info('Starting OCP Prometheus Selector')
 app = Flask(__name__)
 config = configparser.ConfigParser()
 config.sections()
-config.read('metrics_selector.ini')
+config.read('/app/conf/metrics_selector.ini')
 logging.info('Read configuration from selector.ini')
 prometheus_url = config['prometheus']['url']
 logging.info(f"Prometheus URL is {prometheus_url}")
@@ -30,7 +30,8 @@ def hello_world():
 def metrics():
     logging.info(f"Called /metrics endpoint")
     scrape_urls = []
-    headers = {f"Authorization": "Bearer {token}"}
+    headers = {"Authorization": f"Bearer {token}"}
+    return headers
     payload = requests.get(f"{prometheus_url}/api/v1/targets", verify=False, headers=headers, allow_redirects=True)
     targets = json.loads(payload.text)
     for target in targets['data']['activeTargets']:
