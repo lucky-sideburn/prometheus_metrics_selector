@@ -31,8 +31,9 @@ apiVersion: v1
 data:
   metrics_selector.ini: |
     [prometheus]
-    url = https://prometheus-k8s-openshift-monitoring.apps.test.sourcesense.local
-    regex = "^.*(etcd-operator|node-exporter|apiserver-operator-|openshift-state-metrics).*$"
+    url = https://prometheus.local
+    jobs = openshift-state-metrics,node-exporter,kubelet,api
+    namespaces = openshift-etcd-operator
 kind: ConfigMap
 metadata:
   name: ocp-metrics-selector-cm
