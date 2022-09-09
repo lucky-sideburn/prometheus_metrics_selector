@@ -1,4 +1,4 @@
-# Openshift Prometheus Metrics Selecta
+# Openshift Prometheus Metrics Selector
 
 
 ## Description
@@ -8,10 +8,11 @@ Sometime too many metrics and alerts can confuse SysOps teams. There is not clar
 
 OCP_pms is a Prometheus exporter that performs the following actions:
 
-1. Collect metrics from selected exportes across an openshift cluster
+1. Collect metrics from selected exporters across an openshift cluster
 2. Use regular expression for selecting only specific exporter or metrics
 
-OCP_pms is also usefule when you install Prometheus thorough an operator and you need to do some change quickly to label or annotation of Prometheus pod. Usually them are controlled by the operator.
+OCP_pms is also useful when you install Prometheus thorough an operator and you need to do some change quickly on label or annotation of Prometheus pod. 
+Usually them are controlled by the operator.
 
 # Installation
 
