@@ -49,13 +49,13 @@ def metrics():
     
     if target['discoveredLabels']['__meta_kubernetes_namespace'] in namespaces:
       app.logger.error(f">>> Selected target {target}")
-      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['__meta_kubernetes_namespace'])
+      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['__meta_kubernetes_namespace']})
     
     app.logger.error(f"Checking job { target['discoveredLabels']['job']}")
     
     if target['discoveredLabels']['job'] in jobs:
       app.logger.error(f"Selected target {target}")
-      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job']) 
+      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job']}) 
 
   for scrape_url in scrape_urls:
     app.logger.error(f"Scraping metrics from {scrape_url["target"]}")
