@@ -49,17 +49,23 @@ def metrics():
     
     if target['discoveredLabels']['__meta_kubernetes_namespace'] in namespaces:
       app.logger.error(f">>> Selected target {target}")
-      scrape_urls.append(target['scrapeUrl'])
+      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['__meta_kubernetes_namespace'])
     
     app.logger.error(f"Checking job { target['discoveredLabels']['job']}")
     
     if target['discoveredLabels']['job'] in jobs:
       app.logger.error(f"Selected target {target}")
-      scrape_urls.append(target['scrapeUrl']) 
+      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job']) 
 
   for scrape_url in scrape_urls:
-    app.logger.error(f"Scraping metrics from {scrape_url}")
-    payload = requests.get(f"{scrape_url}", verify=False, headers=headers, allow_redirects=True)
+    app.logger.error(f"Scraping metrics from {scrape_url["target"]}")
+    cert = ""
+    key = ""
+    if re.match(r"^.*etcd.*$", scrape_url["discovered_label"]}):
+      cert = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.crt"
+      key = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.key"
+  
+    payload = requests.get(f"{scrape_url["target"]}", verify=False, headers=headers, allow_redirects=True, cert=cert)
     app.logger.error(f"Appending metrics from {payload.text} to the global_payload")
     global_payload = f"{global_payload}\n1%{payload.text}"
 
