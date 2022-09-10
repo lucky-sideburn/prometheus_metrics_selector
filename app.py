@@ -65,6 +65,10 @@ def metrics():
       cert = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.crt"
       key = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.key"
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key))
+    if re.match(r"^.*kube-state-metrics.*$", scrape_url['discovered_label']):
+      cert = "/etc/prometheus/secrets/metrics-client-certs/tls.crt"
+      key = "/etc/prometheus/secrets/metrics-client-certs/tls.key"
+      payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key)) 
     else:
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True)
     app.logger.error(f"Appending metrics from {payload.text} to the global_payload")
