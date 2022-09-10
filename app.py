@@ -64,10 +64,14 @@ def metrics():
     if re.match(r"^.*etcd.*$", scrape_url['discovered_label']):
       cert = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.crt"
       key = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.key"
+      app.logger.error(f"For {scrape_url['discovered_label']} will use {cert} and {key} as client cert")
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key))
+  
     if re.match(r"^.*kube-state-metrics.*$", scrape_url['discovered_label']):
       cert = "/etc/prometheus/secrets/metrics-client-certs/tls.crt"
       key = "/etc/prometheus/secrets/metrics-client-certs/tls.key"
+      app.logger.error(f"For {scrape_url['discovered_label']} will use {cert} and {key} as client cert")
+
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key)) 
     else:
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True)
