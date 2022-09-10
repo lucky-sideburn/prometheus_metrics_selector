@@ -77,6 +77,8 @@ def metrics():
     else:
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True)
     app.logger.error(f"Appending metrics from {payload.text} to the global_payload")
-    global_payload = f"{global_payload}\n1%{payload.text}"
-
+    if global_payload != "":
+      global_payload = f"{global_payload}\n1%{payload.text}"
+    else:
+      global_payload = payload.text
   return global_payload

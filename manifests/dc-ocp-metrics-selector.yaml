@@ -8,16 +8,34 @@ spec:
       labels:
         app: ocp-metrics-selector
       annotations:
-        ad.datadoghq.com/<CONTAINER_IDENTIFIER>.checks: |
+        ad.datadoghq.com/ocp-metrics-selector.check_names: |
+                    ["openmetrics"]
+        ad.datadoghq.com/ocp-metrics-selector.init_configs: |
+                    [{}]
+        ad.datadoghq.com/ocp-metrics-selector.instances: |
+          [
+            {
+              "openmetrics_endpoint": "http://openshift-metrics-selector.apps.test.sourcesense.local/metrics",
+              "namespace": "openshift-monitoring",
+              "tls_verify": "false",
+              "tls_ignore_warning": "true"
+              "metrics": [
+                {"*": "*"},
+                {"*": "*"}
+              ]
+            }
+          ] 
+        ad.datadoghq.com/ocp-metrics-selector.checks: |
           {
             "openmetrics": {
-              "init_config": {},
+              "init_config": [{}],
               "instances": [
                 {
-                  "openmetrics_endpoint": "http://%%host%%:5000/metrics> ",
-                  "namespace": "openshif-monitoring",
-                  "metrics": [{"*":"*"}]
-
+                  "openmetrics_endpoint": "http://openshift-metrics-selector.apps.test.sourcesense.local/metrics",
+                  "namespace": "openshift-monitoring",
+                  "metrics": [{"*":"*"}],
+                  "tls_verify": "false",
+                  "tls_ignore_warning": "true"
                 }
               ]
             }
