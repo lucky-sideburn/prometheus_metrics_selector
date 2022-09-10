@@ -61,18 +61,19 @@ def metrics():
     app.logger.error(f"Scraping metrics from {scrape_url['target']}")
     cert = ""
     key = ""
+    app.logger.error(f"Computing discovered_label {scrape_url['discovered_label']}")
     if re.match(r"^.*etcd.*$", scrape_url['discovered_label']):
       cert = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.crt"
       key = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.key"
       app.logger.error(f"For {scrape_url['discovered_label']} will use {cert} and {key} as client cert")
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key))
   
-    if re.match(r"^.*kube-state-metrics.*$", scrape_url['discovered_label']):
+    elif re.match(r"^.*kube-state-metrics.*$", scrape_url['discovered_label']):
       cert = "/etc/prometheus/secrets/metrics-client-certs/tls.crt"
       key = "/etc/prometheus/secrets/metrics-client-certs/tls.key"
       app.logger.error(f"For {scrape_url['discovered_label']} will use {cert} and {key} as client cert")
+      payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key))
 
-      payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key)) 
     else:
       payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True)
     app.logger.error(f"Appending metrics from {payload.text} to the global_payload")
