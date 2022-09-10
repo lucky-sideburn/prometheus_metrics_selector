@@ -11,6 +11,12 @@ OCP_pms is a Prometheus exporter that performs the following actions:
 
 OCP_pms is also useful when you install Prometheus thorough an operator and you need to do some change quickly on label or annotation of Prometheus pod. 
 Usually them are controlled by the operator.
+
+## Prerequisites
+
+1. OCP_pms must be installed into the project openshift-monitoring for found automatically required secrets (for TLS cert client)
+2. Put a token (Base64 encoded) of a ServiceAccount into the secret secret-ocp-metrics-selector located into the manifests folder. This account in my case is admin of the project openshift-monitoring but I am sure that we can create a custom role with no admin grants but just the required grants...
+
 ## Installation
 
 ```bash
