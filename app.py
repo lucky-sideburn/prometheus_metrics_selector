@@ -54,7 +54,7 @@ def metrics():
     app.logger.error(f"Checking job { target['discoveredLabels']['job']}")
     
     if target['discoveredLabels']['job'] in jobs:
-      app.logger.error(f">>> Selected target {target}")
+      app.logger.error(f"Selected target {target}")
       scrape_urls.append(target['scrapeUrl']) 
 
   for scrape_url in scrape_urls:

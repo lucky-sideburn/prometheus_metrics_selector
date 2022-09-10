@@ -25,10 +25,31 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /app/conf
+            - mountPath: /etc/prometheus/secrets/kube-etcd-client-certs
+              name: secret-kube-etcd-client-certs
+              readOnly: true
+            - mountPath: /etc/prometheus/secrets/metrics-client-certs
+              name: secret-metrics-client-certs
+              readOnly: true
+            - mountPath: /etc/prometheus/configmaps/metrics-client-ca
+              name: configmap-metrics-client-ca
+              readOnly: true
       volumes:
         - name: config-volume
           configMap:
             name: ocp-metrics-selector-cm
+        - name: secret-kube-etcd-client-certs
+          secret:
+            defaultMode: 420
+            secretName: kube-etcd-client-certs
+        - name: secret-metrics-client-certs
+          secret:
+            defaultMode: 420
+            secretName: metrics-client-certs
+        - configMap:
+            defaultMode: 420
+            name: metrics-client-ca
+          name: configmap-metrics-client-ca
   replicas: 1
   triggers:
     - type: "ConfigChange"
