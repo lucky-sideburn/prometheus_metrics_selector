@@ -14,7 +14,7 @@ Usually them are controlled by the operator.
 ## Installation
 
 ```bash
-oc create -f manifests/ocp_metrics_selector.yaml
+oc create -f manifests/dc-ocp-metrics-selector.yaml
 
 # Change token of your sevice account that can be authenticated to the internale Openshift Prometheus
 oc create -f manifests/secret-ocp-metrics-selector.yaml
@@ -36,7 +36,7 @@ data:
   metrics_selector.ini: |
     [prometheus]
     url = https://prometheus.local
-    jobs = node-exporter,prometheus-k8s,openshift-state-metrics
+    jobs = node-exporter,openshift-state-metrics
     namespaces = openshift-etcd
 kind: ConfigMap
 metadata:
