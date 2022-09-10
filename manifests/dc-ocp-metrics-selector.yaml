@@ -7,6 +7,21 @@ spec:
     metadata:
       labels:
         app: ocp-metrics-selector
+      annotations:
+        ad.datadoghq.com/<CONTAINER_IDENTIFIER>.checks: |
+          {
+            "openmetrics": {
+              "init_config": {},
+              "instances": [
+                {
+                  "openmetrics_endpoint": "http://%%host%%:5000/metrics> ",
+                  "namespace": "openshif-monitoring",
+                  "metrics": [{"*":"*"}]
+
+                }
+              ]
+            }
+          }  
     spec:
       containers:
         - name: ocp-metrics-selector
