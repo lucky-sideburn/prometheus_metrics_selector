@@ -58,14 +58,14 @@ def metrics():
       scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job']}) 
 
   for scrape_url in scrape_urls:
-    app.logger.error(f"Scraping metrics from {scrape_url["target"]}")
+    app.logger.error(f"Scraping metrics from {scrape_url['target']}")
     cert = ""
     key = ""
-    if re.match(r"^.*etcd.*$", scrape_url["discovered_label"]}):
+    if re.match(r"^.*etcd.*$", scrape_url['discovered_label']):
       cert = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.crt"
       key = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.key"
   
-    payload = requests.get(f"{scrape_url["target"]}", verify=False, headers=headers, allow_redirects=True, cert=cert)
+    payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=cert)
     app.logger.error(f"Appending metrics from {payload.text} to the global_payload")
     global_payload = f"{global_payload}\n1%{payload.text}"
 
