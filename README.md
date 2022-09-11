@@ -1,17 +1,11 @@
 # Openshift Prometheus Metrics Selector
 ## Description
 
+Custom Prometheus exporter for Openshift, used for collecting only a subset of important metrics. You can configure jobs or namespace as source of metrics (useful for take only node-exporter, openshift-state-metrics or etcd metrics).
+I used it for integrate Prometheus stack installed on Openshift 4.10 with Datadog without add annotations on exporters and containers across the cluster (usually controlled by operators)
+
 Prometheus Stack on Openshift exposes tons of metrics. All are important, but what are definitely significants?
 Sometime too many metrics and alerts can confuse SysOps teams. There is not clarity of what is important for a first-level monitoring system.
-
-OCP_pms is a Prometheus exporter that performs the following actions:
-
-1. Collect metrics from selected exporters across an openshift cluster
-2. Use a configuration file for selecting only specific metrics
-
-OCP_pms is also useful when you install Prometheus thorough an operator and you need to do some change quickly on label or annotation of Prometheus pod. 
-Usually them are controlled by the operator.
-
 ## Use Case - DataDog Openmetrics Integration
 
 ![dd_usecase](images/datadog.svg)
