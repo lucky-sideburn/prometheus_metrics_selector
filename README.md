@@ -12,6 +12,9 @@ OCP_pms is a Prometheus exporter that performs the following actions:
 OCP_pms is also useful when you install Prometheus thorough an operator and you need to do some change quickly on label or annotation of Prometheus pod. 
 Usually them are controlled by the operator.
 
+## Use Case - DataDog Openmetrics Integration
+
+![dd_usecase](images/datadog.svg)
 ## Prerequisites
 
 1. OCP_pms must be installed into the project openshift-monitoring for found automatically required secrets (for TLS cert client)
