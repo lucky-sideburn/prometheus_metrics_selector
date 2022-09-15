@@ -1,84 +1,60 @@
-import time
 import requests
-import json
-import configparser
-import re
-import logging
-import os
-import sys
 from flask import Flask
+from utils import ConfigWrapper, Scraper, Enricher
+import logging as LOG
 
 app = Flask(__name__)
-app.logger.error("Starting OCP Prometheus Selector")
 
-config = configparser.ConfigParser()
-config.sections()
-config.read('/app/conf/metrics_selector.ini')
-
-app.logger.error('Read configuration from selector.ini')
-prometheus_url = config['prometheus']['url']
-app.logger.error(f"Prometheus URL is {prometheus_url}")
-
-token_env = os.environ["TOKEN"]
-token = token_env.strip()
-
-namespaces = list(config['prometheus']['namespaces'].split(",")) 
-jobs = list(config['prometheus']['jobs'].split(","))  
-
-scrape_urls = []
 
 @app.route('/')
 def hello_world():
-    app.logger.error(' '.join(map(str, namespaces))) 
-    app.logger.error(' '.join(map(str, jobs))) 
+    config = ConfigWrapper()
+    app.logger.info(' '.join(map(str, config.get_configured_namespaces())))
+    app.logger.info(' '.join(map(str, config.get_configured_jobs())))
     return 'Welcome to Prometheus Metrics Selector'
+
 
 @app.route('/metrics')
 def metrics():
-  global_payload = ""
-  app.logger.error(f"Called /metrics endpoint")
+    global_payload = ""
+    app.logger.info(f"Called /metrics endpoint")
 
-  scrape_urls = []
-  headers = {"Authorization": f"Bearer {token}"}
-  payload = requests.get(f"{prometheus_url}/api/v1/targets", verify=False, headers=headers, allow_redirects=True)
-  targets = payload.json()
-  
-  for target in targets['data']['activeTargets']:
-    
-    app.logger.error(f"Checking namespaces { target['discoveredLabels']['__meta_kubernetes_namespace']}")
-    
-    if target['labels']['namespace'] in namespaces:
-      app.logger.error(f">>> Selected target {target}")
-      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['__meta_kubernetes_namespace']})
-    
-    app.logger.error(f"Checking job { target['discoveredLabels']['job']}")
-    
-    if target['labels']['job'] in jobs:
-      app.logger.error(f"Selected target {target}")
-      scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job']}) 
+    config = ConfigWrapper()
 
-  for scrape_url in scrape_urls:
-    app.logger.error(f"Scraping metrics from {scrape_url['target']}")
-    cert = ""
-    key = ""
-    app.logger.error(f"Computing discovered_label {scrape_url['discovered_label']}")
-    if re.match(r"^.*etcd.*$", scrape_url['discovered_label']):
-      cert = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.crt"
-      key = "/etc/prometheus/secrets/kube-etcd-client-certs/etcd-client.key"
-      app.logger.error(f"For {scrape_url['discovered_label']} will use {cert} and {key} as client cert")
-      payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key))
-  
-    elif re.match(r"^.*kube-state-metrics.*$", scrape_url['discovered_label']):
-      cert = "/etc/prometheus/secrets/metrics-client-certs/tls.crt"
-      key = "/etc/prometheus/secrets/metrics-client-certs/tls.key"
-      app.logger.error(f"For {scrape_url['discovered_label']} will use {cert} and {key} as client cert")
-      payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True, cert=(cert, key))
+    scrape_urls = []
+    headers = {"Authorization": f"Bearer {ConfigWrapper.get_stripped_token()}"}
+    payload = requests.get(f"{config.get_prometheus_url()}/api/v1/targets", verify=False, headers=headers,
+                           allow_redirects=True)
+    targets = payload.json()
 
-    else:
-      payload = requests.get(f"{scrape_url['target']}", verify=False, headers=headers, allow_redirects=True)
-    app.logger.error(f"Appending metrics from {payload.text} to the global_payload")
-    if global_payload != "":
-      global_payload = f"{global_payload}\n1%{payload.text}"
-    else:
-      global_payload = payload.text
-  return global_payload
+    for target in targets['data']['activeTargets']:
+        # checking for namespace
+        LOG.info(f"Checking namespaces {target['discoveredLabels']['__meta_kubernetes_namespace']}")
+        if target['labels']['namespace'] in config.get_configured_namespaces():
+            LOG.info(f">>> Selected target {target}")
+            scrape_urls.append({"target": target['scrapeUrl'],
+                                "discovered_label": target['discoveredLabels']['__meta_kubernetes_namespace'],
+                                "tags": [target["labels"]]})
+        # checking for job
+        LOG.info(f"Checking job {target['discoveredLabels']['job']}")
+        if target['labels']['job'] in config.get_configured_jobs():
+            LOG.info(f"Selected target {target}")
+            scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job'],
+                                "tags": [target["labels"]]})
+    # scraping
+    for scrape_url in scrape_urls:
+        LOG.info(f"Scraping metrics from {scrape_url['target']}")
+        LOG.info(f"Computing discovered_label {scrape_url['discovered_label']}")
+        # use scraper
+        scraper = Scraper(scrape_url['target'], headers, scrape_url['discovered_label'])
+        global_payload = scraper.to_scrape()
+        # enricher
+        enricher = Enricher()
+        enricher.to_enrich(global_payload, scrape_url["tags"])
+        # rejoin payload
+        LOG.info(f"Appending metrics from {payload.text} to the global_payload")
+        if global_payload != "":
+            global_payload = f"{global_payload}\n1%{payload.text}"
+        else:
+            global_payload = payload.text
+    return global_payload

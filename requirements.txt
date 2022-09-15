@@ -1,2 +1,3 @@
 requests
+envyaml==1.10.211231
 flask

@@ -1,0 +1,18 @@
+# if you use  class in envyaml lib you can use also environment variable inside yml
+# using the unix notation like: ${VAR}
+metrics:
+  enricher:
+    - name: "etcd_network_peer_round_trip_time_seconds_bucket"
+      tags:
+        - endpoint
+        - instance
+        - job
+        - namespace
+        - pod
+        - service
+    - name: "test"
+      tags:
+        - test1
+        - test2
+
+

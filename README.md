@@ -41,6 +41,17 @@ data:
     url = https://prometheus.local
     jobs = node-exporter,openshift-state-metrics
     namespaces = openshift-etcd
+  app.yml: |
+    metrics:
+      enricher:
+        - name: "etcd_network_peer_round_trip_time_seconds_bucket"
+          tags:
+            - endpoint
+            - instance
+            - job
+            - namespace
+            - pod
+            - service
 kind: ConfigMap
 metadata:
   name: ocp-metrics-selector-cm

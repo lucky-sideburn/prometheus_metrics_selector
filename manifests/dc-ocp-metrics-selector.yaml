@@ -43,6 +43,7 @@ spec:
     spec:
       containers:
         - name: ocp-metrics-selector
+          # after the integration test we can use the business hub
           image: >-
             docker.io/luckysideburn/ocp_metrics_selector:v1.0.0
           imagePullPolicy: Always
