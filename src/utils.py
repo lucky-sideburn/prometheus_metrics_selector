@@ -7,7 +7,19 @@ from envyaml import EnvYAML
 import logging as LOG
 
 
-class ConfigWrapper(object):
+class Singleton(type):
+    """
+    Singeton object using metaclass approach
+    """
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class ConfigWrapper(metaclass=Singleton):
     """
     This Singleton class represents the configuration class.
     """
@@ -18,13 +30,13 @@ class ConfigWrapper(object):
     # configparser config
     __config: configparser.ConfigParser = None
 
-    def __new__(cls, *args, **kwargs):
-        if not isinstance(cls.__instance, cls):
-            config = configparser.ConfigParser()
-            config.sections()
-            config.read(os.getenv("CONFIG_FILE", "/app/conf/metrics_selector.ini"))
-            cls.__instance = object.__new__(cls, *args, **kwargs)
-        return cls.__instance
+    def __init__(self, *args, **kwargs):
+        self.__config = configparser.ConfigParser()
+        if self.__config is not None:
+            self.__config.sections()
+            self.__config.read(os.getenv("CONFIG_FILE", "/app/conf/metrics_selector.ini"))
+        else:
+            raise Exception("ConfigParse is None")
 
     @staticmethod
     def get_stripped_token() -> str:
@@ -130,12 +142,11 @@ class Scraper:
         self.__verify = verify
         self.__allow_redirects = allow_redirect
 
-    def to_scrape(self):
+    def to_scrape(self, config):
         """
         Scrape ulr metrics
         """
         ssl = ()
-        config = ConfigWrapper()
         if config is not None:
             if re.match(self.__etcd_scraper_regex_str, self.__job):
                 ssl.__add__(config.get_etcd_ssl_cert())
