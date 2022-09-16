@@ -9,15 +9,15 @@ app = Flask(__name__)
 @app.route('/')
 def welcome():
     config = ConfigWrapper()
-    app.logger.info(' '.join(map(str, config.get_configured_namespaces())))
-    app.logger.info(' '.join(map(str, config.get_configured_jobs())))
+    print(' '.join(map(str, config.get_configured_namespaces())))
+    print(' '.join(map(str, config.get_configured_jobs())))
     return 'Welcome to Prometheus Metrics Selector'
 
 
 @app.route('/metrics')
 def metrics():
     global_payload = ""
-    app.logger.info(f"Called /metrics endpoint")
+    print(f"Called /metrics endpoint")
 
     # catch the exception
     config = ConfigWrapper()
@@ -30,22 +30,22 @@ def metrics():
 
     for target in targets['data']['activeTargets']:
         # checking for namespace
-        LOG.info(f"Checking namespaces {target['discoveredLabels']['__meta_kubernetes_namespace']}")
+        print(f"Checking namespaces {target['discoveredLabels']['__meta_kubernetes_namespace']}")
         if target['labels']['namespace'] in config.get_configured_namespaces():
-            LOG.info(f">>> Selected target {target}")
+            print(f">>> Selected target {target}")
             scrape_urls.append({"target": target['scrapeUrl'],
                                 "discovered_label": target['discoveredLabels']['__meta_kubernetes_namespace'],
                                 "tags": [target["labels"]]})
         # checking for job
-        LOG.info(f"Checking job {target['discoveredLabels']['job']}")
+        print(f"Checking job {target['discoveredLabels']['job']}")
         if target['labels']['job'] in config.get_configured_jobs():
-            LOG.info(f"Selected target {target}")
+            print(f"Selected target {target}")
             scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job'],
                                 "tags": [target["labels"]]})
     # scraping
     for scrape_url in scrape_urls:
-        LOG.info(f"Scraping metrics from {scrape_url['target']}")
-        LOG.info(f"Computing discovered_label {scrape_url['discovered_label']}")
+        print(f"Scraping metrics from {scrape_url['target']}")
+        print(f"Computing discovered_label {scrape_url['discovered_label']}")
         # use scraper
         scraper = Scraper(scrape_url['target'], headers, scrape_url['discovered_label'])
         global_payload = scraper.to_scrape(config)
@@ -53,7 +53,7 @@ def metrics():
         enricher = Enricher()
         enricher.to_enrich(global_payload, scrape_url["tags"])
         # rejoin payload
-        LOG.info(f"Appending metrics from {payload.text} to the global_payload")
+        print(f"Appending metrics from {payload.text} to the global_payload")
         if global_payload != "":
             global_payload = f"{global_payload}\n1%{payload.text}"
         else:
