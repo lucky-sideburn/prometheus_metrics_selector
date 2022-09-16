@@ -208,8 +208,10 @@ class Enricher:
         """
         Enrich payload, Return the enriched payload
         """
-        enriched_metric = ""
+        enriched_payload = ""
         try:
+            print(f"payload: {payload}")
+            print(f"payload type = {type(payload)}")
             for line in payload.splitlines():
                 line = line.strip()
                 if line is not None and line != "" and not str.isspace(line) and not line.startswith("#"):
@@ -222,8 +224,8 @@ class Enricher:
                                 for key, value in tag.items():
                                     # now we inject tags as is, but we can use the app.yml to drive injection
                                     tags_to_inject = tags_to_inject + "," + key + "=" + value
-                            enriched_metric = enriched_metric + line[:i] + tags_to_inject + line[i:] + "\n"
-            return enriched_metric
+                            enriched_payload = enriched_payload + line[:i] + tags_to_inject + line[i:] + "\n"
+            return enriched_payload
         except Exception as e:
             LOG.error("Error during enrich line metric for ew tag")
             raise e

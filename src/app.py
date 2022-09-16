@@ -16,7 +16,6 @@ def welcome():
 
 @app.route('/metrics')
 def metrics():
-    global_payload = ""
     print(f"Called /metrics endpoint")
 
     # catch the exception
@@ -24,9 +23,9 @@ def metrics():
 
     scrape_urls = []
     headers = {"Authorization": f"Bearer {ConfigWrapper.get_stripped_token()}"}
-    payload = requests.get(f"{config.get_prometheus_url()}/api/v1/targets", verify=False, headers=headers,
-                           allow_redirects=True)
-    targets = payload.json()
+    prometheus_payload = requests.get(f"{config.get_prometheus_url()}/api/v1/targets", verify=False, headers=headers,
+                                      allow_redirects=True)
+    targets = prometheus_payload.json()
 
     for target in targets['data']['activeTargets']:
         # checking for namespace
@@ -50,14 +49,16 @@ def metrics():
         print(f"Computing discovered_label {scrape_url['discovered_label']}")
         # use scraper
         scraper = Scraper(scrape_url['target'], headers, scrape_url['discovered_label'])
-        global_payload = scraper.to_scrape(config)
-        # enricher
-        enricher = Enricher()
-        enricher.to_enrich(global_payload, scrape_url["tags"])
-        # rejoin payload
-        print(f"Appending metrics from {payload.text} to the global_payload")
-        if global_payload != "":
-            global_payload = f"{global_payload}\n1%{payload.text}"
-        else:
-            global_payload = payload.text
-    return global_payload
+        scraped_payload = scraper.to_scrape(config)
+        enriched_payload = ""
+        if scraped_payload is not None:
+            # enricher
+            enricher = Enricher()
+            enriched_payload = enricher.to_enrich(scraped_payload.text, scrape_url["tags"])
+            # rejoin prometheus_payload
+            print(f"Appending metrics from {prometheus_payload.text} to the scraped_payload")
+            if enriched_payload != "":
+                enriched_payload = f"{enriched_payload}\n1%{prometheus_payload.text}"
+            else:
+                enriched_payload = prometheus_payload.text
+    return enriched_payload
