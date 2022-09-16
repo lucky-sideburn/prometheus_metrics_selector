@@ -148,7 +148,7 @@ class Scraper:
         """
         Scrape ulr metrics
         """
-        ssl = ()
+        ssl = []
         print(f"to_scrape: {config} and "
               f"{self.__job} and etcd regex and "
               f"{self.__etcd_scraper_regex_str} and "
@@ -156,18 +156,18 @@ class Scraper:
         if config is not None:
             if re.match(self.__etcd_scraper_regex_str, self.__job):
                 print("etcd Matched certs")
-                ssl + tuple(config.get_etcd_ssl_cert())
-                ssl + tuple(config.get_etcd_ssl_cert())
+                ssl.append(config.get_etcd_ssl_cert())
+                ssl.append(config.get_etcd_ssl_cert())
             elif re.match(self.__kst_scraper_regex_str, self.__job):
                 print("ksm Matched certs")
-                ssl + tuple(config.get_ksm_ssl_cert())
-                ssl + tuple(config.get_ksm_ssl_key())
+                ssl.append(config.get_ksm_ssl_cert())
+                ssl.append(config.get_ksm_ssl_key())
             LOG.info(f"For {self.__job} will use {ssl[0]} and {ssl[1]} as client cert")
             return requests.get(f"{self.__url}",
                                 verify=self.__verify,
                                 headers=self.__headers,
                                 allow_redirects=self.__allow_redirects,
-                                cert=ssl) if ssl.count() > 0 \
+                                cert=tuple(ssl)) if len(ssl) > 0 \
                 else requests.get(f"{self.__url}",
                                   verify=self.__verify,
                                   headers=self.__headers,
