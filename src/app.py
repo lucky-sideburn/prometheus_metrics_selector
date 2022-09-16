@@ -44,15 +44,17 @@ def metrics():
             scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job'],
                                 "tags": [target["labels"]]})
     # scraping
+    enriched_payload = ""
     for scrape_url in scrape_urls:
         print(f"Scraping metrics from {scrape_url['target']}")
         print(f"Computing discovered_label {scrape_url['discovered_label']}")
         # use scraper
         scraper = Scraper(scrape_url['target'], headers, scrape_url['discovered_label'])
         scraped_payload = scraper.to_scrape(config)
-        enriched_payload = ""
         if scraped_payload is not None:
             # enricher
             enricher = Enricher()
-            enriched_payload = enricher.to_enrich(scraped_payload.text, scrape_url["tags"])
+            print(f"scraped_payload: {scraped_payload} and tags: {scrape_url['tags']}")
+            enriched_payload = enriched_payload + enricher.to_enrich(scraped_payload.text, scrape_url["tags"])
+    print(f"global_payload {enriched_payload}\n1%{prometheus_payload.text}")
     return f"{enriched_payload}\n1%{prometheus_payload.text}"

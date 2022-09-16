@@ -198,31 +198,35 @@ class Enricher:
             upper_bound = line.index("{")
             if upper_bound is not None:
                 name = line[0:upper_bound]
-            LOG.info(f"Found metrics to enrich with name: {line}")
             return name
         except ValueError as e:
-            LOG.warning(f"Metric not to enrich {line}")
+            pass
 
     def to_enrich(self, payload: str, tags: list):
         """
         Enrich payload, Return the enriched payload
         """
-        enriched_payload = ""
         try:
+            to_enrich = ""
             for line in payload.splitlines():
                 line = line.strip()
-                if line is not None and line != "" and not str.isspace(line) and not line.startswith("#"):
+                if line is not None and line != "" and not str.isspace(line):
                     metric_name = Enricher.get_metric_name(line)
                     for metric in self.__application_settings["metrics.enricher"]:
                         if metric["name"] == metric_name:
+                            print(f"metric in line is {metric_name} and metric configured is {metric['name']}")
                             i = line.rindex("}")
                             tags_to_inject = ""
                             for tag in tags:
                                 for key, value in tag.items():
                                     # now we inject tags as is, but we can use the app.yml to drive injection
                                     tags_to_inject = tags_to_inject + "," + key + "=" + value
-                            enriched_payload = enriched_payload + line[:i] + tags_to_inject + line[i:] + "\n"
-            return enriched_payload
+                            to_enrich = to_enrich + line[:i] + tags_to_inject + line[i:] + "\n"
+                            print(f"enriched_metrics {to_enrich}")
+                if to_enrich == "":
+                    to_enrich += line + "\n"
+            print(f"enriched_payload {to_enrich}")
+            return to_enrich
         except Exception as e:
-            LOG.error("Error during enrich line metric for ew tag")
+            LOG.error("Error during enrich line metric for new tag")
             raise e
