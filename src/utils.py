@@ -68,6 +68,7 @@ class ConfigWrapper(metaclass=Singleton):
         Get configured namespaces as list
         """
         try:
+            print(f"namespaces: {self.config()['prometheus']['namespaces'].split(',')}")
             return [self.config()["prometheus"]["namespaces"].split(",")]
         except Exception as e:
             raise e
@@ -77,6 +78,7 @@ class ConfigWrapper(metaclass=Singleton):
         Get configured jobs as list
         """
         try:
+            print(f"jobs: {self.config()['prometheus']['jobs'].split(',')}")
             return [self.config()["prometheus"]["jobs"].split(",")]
         except Exception as e:
             raise e
