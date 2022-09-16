@@ -162,7 +162,6 @@ class Scraper:
                 print("ksm Matched certs")
                 ssl.append(config.get_ksm_ssl_cert())
                 ssl.append(config.get_ksm_ssl_key())
-            print(f"For {self.__job} will use {ssl[0]} and {ssl[1]} as client cert")
             return requests.get(f"{self.__url}",
                                 verify=self.__verify,
                                 headers=self.__headers,
