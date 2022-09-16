@@ -147,6 +147,10 @@ class Scraper:
         Scrape ulr metrics
         """
         ssl = ()
+        print(f"to_scrape: {config} and "
+              f"{self.__job} and etcd regex and "
+              f"{self.__etcd_scraper_regex_str} and "
+              f"ksm regex {self.__kst_scraper_regex_str}")
         if config is not None:
             if re.match(self.__etcd_scraper_regex_str, self.__job):
                 print("etcd Matched certs")
