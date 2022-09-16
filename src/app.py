@@ -31,6 +31,7 @@ def metrics():
     for target in targets['data']['activeTargets']:
         # checking for namespace
         print(f"Checking namespaces {target['discoveredLabels']['__meta_kubernetes_namespace']}")
+        print(f"configured_namespaces {config.get_configured_namespaces()}")
         if target['labels']['namespace'] in config.get_configured_namespaces():
             print(f">>> Selected target {target}")
             scrape_urls.append({"target": target['scrapeUrl'],
@@ -38,6 +39,7 @@ def metrics():
                                 "tags": [target["labels"]]})
         # checking for job
         print(f"Checking job {target['discoveredLabels']['job']}")
+        print(f"configured_jobs {config.get_configured_jobs()}")
         if target['labels']['job'] in config.get_configured_jobs():
             print(f"Selected target {target}")
             scrape_urls.append({"target": target['scrapeUrl'], "discovered_label": target['discoveredLabels']['job'],
