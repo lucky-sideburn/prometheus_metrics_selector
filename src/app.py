@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():
+def welcome():
     config = ConfigWrapper()
     app.logger.info(' '.join(map(str, config.get_configured_namespaces())))
     app.logger.info(' '.join(map(str, config.get_configured_jobs())))
@@ -19,6 +19,7 @@ def metrics():
     global_payload = ""
     app.logger.info(f"Called /metrics endpoint")
 
+    # catch the exception
     config = ConfigWrapper()
 
     scrape_urls = []
@@ -47,7 +48,7 @@ def metrics():
         LOG.info(f"Computing discovered_label {scrape_url['discovered_label']}")
         # use scraper
         scraper = Scraper(scrape_url['target'], headers, scrape_url['discovered_label'])
-        global_payload = scraper.to_scrape()
+        global_payload = scraper.to_scrape(config)
         # enricher
         enricher = Enricher()
         enricher.to_enrich(global_payload, scrape_url["tags"])
