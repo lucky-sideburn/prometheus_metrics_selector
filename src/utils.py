@@ -22,7 +22,7 @@ class ConfigWrapper(object):
         if not isinstance(cls.__instance, cls):
             config = configparser.ConfigParser()
             config.sections()
-            config.read(os.getenv("CONFIG_FILE") if not None else "/app/conf/metrics_selector.ini")
+            config.read(os.getenv("CONFIG_FILE", "/app/conf/metrics_selector.ini"))
             cls.__instance = object.__new__(cls, *args, **kwargs)
         return cls.__instance
 

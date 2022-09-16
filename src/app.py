@@ -1,6 +1,6 @@
 import requests
 from flask import Flask
-from utils import ConfigWrapper, Scraper, Enricher
+from src.utils import ConfigWrapper, Scraper, Enricher
 import logging as LOG
 
 app = Flask(__name__)
