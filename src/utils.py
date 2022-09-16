@@ -69,7 +69,7 @@ class ConfigWrapper(metaclass=Singleton):
         """
         try:
             print(f"namespaces: {self.config()['prometheus']['namespaces'].split(',')}")
-            return [self.config()["prometheus"]["namespaces"].split(",")]
+            return self.config()["prometheus"]["namespaces"].split(",")
         except Exception as e:
             raise e
 
@@ -79,7 +79,7 @@ class ConfigWrapper(metaclass=Singleton):
         """
         try:
             print(f"jobs: {self.config()['prometheus']['jobs'].split(',')}")
-            return [self.config()["prometheus"]["jobs"].split(",")]
+            return self.config()["prometheus"]["jobs"].split(",")
         except Exception as e:
             raise e
 
