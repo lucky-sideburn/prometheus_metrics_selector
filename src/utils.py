@@ -156,12 +156,12 @@ class Scraper:
         if config is not None:
             if re.match(self.__etcd_scraper_regex_str, self.__job):
                 print("etcd Matched certs")
-                config.get_etcd_ssl_cert() + ssl
-                config.get_etcd_ssl_cert() + ssl
+                (config.get_etcd_ssl_cert()) + ssl
+                (config.get_etcd_ssl_cert()) + ssl
             elif re.match(self.__kst_scraper_regex_str, self.__job):
                 print("ksm Matched certs")
-                config.get_ksm_ssl_cert() + ssl
-                config.get_ksm_ssl_key() + ssl
+                (config.get_ksm_ssl_cert()) + ssl
+                (config.get_ksm_ssl_key()) + ssl
             LOG.info(f"For {self.__job} will use {ssl[0]} and {ssl[1]} as client cert")
             return requests.get(f"{self.__url}",
                                 verify=self.__verify,
