@@ -55,10 +55,4 @@ def metrics():
             # enricher
             enricher = Enricher()
             enriched_payload = enricher.to_enrich(scraped_payload.text, scrape_url["tags"])
-            # rejoin prometheus_payload
-            print(f"Appending metrics from {prometheus_payload.text} to the scraped_payload")
-            if enriched_payload != "":
-                enriched_payload = f"{enriched_payload}\n1%{prometheus_payload.text}"
-            else:
-                enriched_payload = prometheus_payload.text
-    return enriched_payload
+    return f"{enriched_payload}\n1%{prometheus_payload.text}"

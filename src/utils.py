@@ -199,9 +199,10 @@ class Enricher:
             upper_bound = line.index("{")
             if upper_bound is not None:
                 name = line[0:upper_bound]
+            LOG.info(f"Found metrics to enrich with name: {line}")
             return name
         except ValueError as e:
-            LOG.warning(f"Error during get index for line {line}")
+            LOG.warning(f"Metric not to enrich {line}")
 
     def to_enrich(self, payload: str, tags: list):
         """
@@ -209,8 +210,6 @@ class Enricher:
         """
         enriched_payload = ""
         try:
-            print(f"payload: {payload}")
-            print(f"payload type = {type(payload)}")
             for line in payload.splitlines():
                 line = line.strip()
                 if line is not None and line != "" and not str.isspace(line) and not line.startswith("#"):
