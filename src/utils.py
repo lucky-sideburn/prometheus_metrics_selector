@@ -201,8 +201,7 @@ class Enricher:
                 name = line[0:upper_bound]
             return name
         except ValueError as e:
-            LOG.error(f"Error during get index for line {line}")
-            raise ValueError(e)
+            LOG.warning(f"Error during get index for line {line}")
 
     def to_enrich(self, payload: str, tags: list):
         """
