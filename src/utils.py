@@ -149,10 +149,6 @@ class Scraper:
         Scrape ulr metrics
         """
         ssl = []
-        print(f"to_scrape: {config} and "
-              f"{self.__job} and etcd regex and "
-              f"{self.__etcd_scraper_regex_str} and "
-              f"ksm regex {self.__kst_scraper_regex_str}")
         if config is not None:
             if re.match(self.__etcd_scraper_regex_str, self.__job):
                 print("etcd Matched certs")
@@ -200,16 +196,18 @@ class Enricher:
                 name = line[0:upper_bound]
             return name
         except ValueError as e:
-            pass
+            return None
 
     def to_enrich(self, payload: str, tags: list):
         """
         Enrich payload, Return the enriched payload
         """
         try:
-            to_enrich = ""
+            enriched_payload = ""
             for line in payload.splitlines():
+                to_enrich = ""
                 line = line.strip()
+                print(f"original line: {line}")
                 if line is not None and line != "" and not str.isspace(line):
                     metric_name = Enricher.get_metric_name(line)
                     for metric in self.__application_settings["metrics.enricher"]:
@@ -220,13 +218,14 @@ class Enricher:
                             for tag in tags:
                                 for key, value in tag.items():
                                     # now we inject tags as is, but we can use the app.yml to drive injection
-                                    tags_to_inject = tags_to_inject + "," + key + "=" + value
+                                    tags_to_inject = tags_to_inject + "," + key + "=" + '"' + value + '"'
                             to_enrich = to_enrich + line[:i] + tags_to_inject + line[i:] + "\n"
+                            enriched_payload += to_enrich
                             print(f"enriched_metrics {to_enrich}")
                 if to_enrich == "":
-                    to_enrich += line + "\n"
-            print(f"enriched_payload {to_enrich}")
-            return to_enrich
+                    enriched_payload += line + "\n"
+            print(f"enriched_payload {enriched_payload}")
+            return enriched_payload
         except Exception as e:
             LOG.error("Error during enrich line metric for new tag")
             raise e
