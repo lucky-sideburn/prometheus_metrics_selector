@@ -210,12 +210,10 @@ class Enricher:
                         continue
                 to_enrich = ""
                 line = line.strip()
-                print(f"original line: {line}")
                 if line is not None and line != "" and not str.isspace(line):
                     metric_name = Enricher.get_metric_name(line)
                     for metric in self.__application_settings["metrics.enricher"]:
                         if metric["name"] == metric_name:
-                            print(f"metric in line is {metric_name} and metric configured is {metric['name']}")
                             i = line.rindex("}")
                             tags_to_inject = ""
                             for tag in tags:
@@ -224,10 +222,8 @@ class Enricher:
                                     tags_to_inject = tags_to_inject + "," + key + "=" + '"' + value + '"'
                             to_enrich = to_enrich + line[:i] + tags_to_inject + line[i:] + "\n"
                             enriched_payload += to_enrich
-                            print(f"enriched_metrics {to_enrich}")
                 if to_enrich == "":
                     enriched_payload += line + "\n"
-            print(f"enriched_payload {enriched_payload}")
             return enriched_payload
         except Exception as e:
             LOG.error("Error during enrich line metric for new tag")
