@@ -206,7 +206,7 @@ class Enricher:
             enriched_payload = ""
             for line in payload.splitlines():
                 for exception_rule in self.__application_settings["configuration.exception_rules"]:
-                    if re.match(line, exception_rule):
+                    if re.match(exception_rule, line):
                         continue
                 to_enrich = ""
                 line = line.strip()

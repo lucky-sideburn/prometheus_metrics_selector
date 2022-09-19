@@ -2,8 +2,8 @@
 # using the unix notation like: ${VAR}
 configuration:
   exception_rules:
-    - ".*grpc.*"
-    - - ".*thanos.*"
+    - 'r".*grpc.*"'
+    - 'r".*thanos.*"'
 metrics:
   enricher:
     - name: "etcd_network_peer_round_trip_time_seconds_bucket"
