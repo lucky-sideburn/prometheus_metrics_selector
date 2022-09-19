@@ -218,7 +218,7 @@ class Enricher:
                             tags_to_inject = ""
                             for tag in tags:
                                 for key, value in tag.items():
-                                    # now we inject tags as is, but we can use the app.yml to drive injection
+                                    # now we inject tags as is, but we can use the app.yml to drive tags injection
                                     tags_to_inject = tags_to_inject + "," + key + "=" + '"' + value + '"'
                             to_enrich = to_enrich + line[:i] + tags_to_inject + line[i:] + "\n"
                             enriched_payload += to_enrich
